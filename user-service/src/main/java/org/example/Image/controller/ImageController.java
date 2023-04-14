@@ -3,6 +3,7 @@ package org.example.Image.controller;
 import org.example.Image.entity.ProcessResult;
 import org.example.Image.entity.UploadResult;
 import org.example.Image.pojo.colonoscope.Image;
+import org.example.Image.pojo.colonoscope.ImageExample;
 import org.example.Image.service.ImageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,6 +91,15 @@ public class ImageController {
         }
     }
 
+    @PostMapping("/history")
+    public List<Image> getImageList(@RequestParam("uid") Integer uid){
+        ImageExample example = new ImageExample();
+        ImageExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        List<Image> list = imageService.selectByExample(example);
+        System.out.println("列表中第一个图片的上传日期是："+list.get(0).getUploaddate());
+        return list;
+    }
     private static ProcessResult processImageWithPython(String pythonInterpreterPath,ImageServiceImpl imageService, Integer uid, String image_path, String pythonScriptPath) throws IOException, InterruptedException {
 
         // Create a list to hold the command and arguments

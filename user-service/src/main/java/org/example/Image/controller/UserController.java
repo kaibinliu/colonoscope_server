@@ -15,7 +15,7 @@ public class UserController {
     private UserServiceImpl userService;
 
     @PostMapping("/register")
-    public User userRegister(@RequestBody Map<String,Object> info){
+    public Integer userRegister(@RequestBody Map<String,Object> info){
         User user = new User();
         user.setUsername((String) info.get("username"));
         user.setPassword((String) info.get("password"));
@@ -26,8 +26,7 @@ public class UserController {
         user.setCity((String) info.get("city"));
         user.setDistrict((String) info.get("district"));
         user.setStreet((String) info.get("street"));
-        int uid = userService.insert(user);
-        return userService.selectByPrimaryKey(uid);
+        return userService.insert(user);
     }
 
     @RequestMapping("/{id}")
@@ -52,5 +51,22 @@ public class UserController {
 //            System.out.println("完全正确");
             return user;
         }
+    }
+
+    @PostMapping("/updateuserinfo")
+    public User updateUserInfo(@RequestBody Map<String,Object> info){
+        User user = new User();
+        user.setUid((Integer) info.get("uid"));
+        user.setUsername((String) info.get("username"));
+        user.setPassword((String) info.get("password"));
+        user.setTelephone((String) info.get("telephone"));
+        user.setWechat((String) info.get("wechat"));
+        user.setEmail((String) info.get("email"));
+        user.setProvince((String) info.get("province"));
+        user.setCity((String) info.get("city"));
+        user.setDistrict((String) info.get("district"));
+        user.setStreet((String) info.get("street"));
+        userService.updateByPrimaryKey(user);
+        return userService.selectByPrimaryKey(user.getUid());
     }
 }
