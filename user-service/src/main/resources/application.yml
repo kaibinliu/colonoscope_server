@@ -3,14 +3,20 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/myblog?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/colonoscope?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: '001124'
 
 mybatis:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  type-aliases-package: com.zjgsu.blog.entity
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+  type-aliases-package: org.example.Image.pojo.colonoscope
+  mapper-locations: classpath:mapper/colonoscope/*.xml
+
+# MyBatis Generator 插件配置
+mybatis-generator:
+  configuration-file: src/main/resources/generatorConfig.xml
 
 python:
   interpreter: 'E:\PyCharm2022.3\Workplace_1\DeepLearning_base\venv\Scripts\python.exe'

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="MySqlContext" targetRuntime="MyBatis3">
+        <!-- 数据库连接 -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/colonoscope?characterEncoding=UTF-8&amp;serverTimezone=Asia/Shanghai"
+                        userId="root" password="001124">
+        </jdbcConnection>
+
+        <!-- 生成POJO类的包名和位置 -->
+        <javaModelGenerator targetPackage="org.example.Image.pojo"
+                            targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 生成Mapper XML文件的包名和位置 -->
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- 生成Mapper接口的包名和位置 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="org.example.Image.mapper"
+                             targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!-- 生成表对应的实体类和Mapper接口 -->
+        <table catalog="colonoscope" schema="" tableName="image" domainObjectName="Image"/>
+        <table catalog="colonoscope" schema="" tableName="user" domainObjectName="User"/>
+
+    </context>
+</generatorConfiguration>

@@ -2,6 +2,9 @@ package org.example.Image.controller;
 
 import org.example.Image.entity.ProcessResult;
 import org.example.Image.entity.UploadResult;
+import org.example.Image.pojo.colonoscope.Image;
+import org.example.Image.service.ImageServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
@@ -31,6 +35,8 @@ public class ImageController {
     @Value("${image-savepath}")
     private String image_savepath;
 
+    @Autowired
+    private ImageServiceImpl imageService;
     @PostMapping("/image")
     public ResponseEntity<UploadResult> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
@@ -68,14 +74,14 @@ public class ImageController {
     }
 
     @PostMapping("/process")
-    public ResponseEntity<ProcessResult> processImage(@RequestParam("fileName") String fileName) throws IOException, InterruptedException {
+    public ResponseEntity<ProcessResult> processImage(@RequestParam("fileName") String fileName, @RequestParam("uid") Integer uid) throws IOException, InterruptedException {
         try {
             // 1. 根据文件名找到对应的图像
             String image_path = image_savepath + "/originalImage/" + fileName;
             String pythonscriptpath = System.getProperty("user.dir")+"/py/process.py";
             System.out.println("这是图片的位置："+image_path);
             System.out.println("这是py脚本的位置："+pythonscriptpath);
-            ProcessResult result = processImageWithPython(pythonInterpreterPath,image_path, pythonscriptpath);
+            ProcessResult result = processImageWithPython(pythonInterpreterPath,imageService, uid, image_path, pythonscriptpath);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (IOException e) {
@@ -84,7 +90,7 @@ public class ImageController {
         }
     }
 
-    private static ProcessResult processImageWithPython(String pythonInterpreterPath,String image_path, String pythonScriptPath) throws IOException, InterruptedException {
+    private static ProcessResult processImageWithPython(String pythonInterpreterPath,ImageServiceImpl imageService, Integer uid, String image_path, String pythonScriptPath) throws IOException, InterruptedException {
 
         // Create a list to hold the command and arguments
         List<String> command = new ArrayList<>();
@@ -133,6 +139,28 @@ public class ImageController {
         ProcessResult result = new ProcessResult();
         result.setMaskImage(path1);
         result.setBboxesImage(path2);
+        saveProcessHistory(imageService,uid,image_path,path1,path2);
         return result;
+    }
+
+    public static void saveProcessHistory(ImageServiceImpl imageService, Integer uid, String imagepath, String maskpath, String boundingboxpath){
+        File file = new File(imagepath);
+        String imagename = file.getName().split("\\.")[0] + ".jpg";
+        imagepath = "/images/originalImage/" + imagename;
+        Date uploaddate = new Date();
+        Image image = new Image();
+        image.setUid(uid);
+        image.setImagename(imagename);
+        image.setImagepath(imagepath);
+        image.setMaskpath(maskpath);
+        image.setBoundingboxpath(boundingboxpath);
+        image.setUploaddate(uploaddate);
+        imageService.insert(image);
+        System.out.println("uid:"+uid);
+        System.out.println("imagename:"+imagename);
+        System.out.println("imagepath:"+imagepath);
+        System.out.println("maskpath:"+maskpath);
+        System.out.println("boundingboxpath:"+boundingboxpath);
+        System.out.println("uploaddate:"+uploaddate);
     }
 }
