@@ -6,6 +6,10 @@ spring:
     url: jdbc:mysql://localhost:3306/colonoscope?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: '001124'
+  servlet:
+    multipart:
+      max-file-size: 256MB
+      max-request-size: 256MB
 
 mybatis:
   configuration:
@@ -22,3 +26,4 @@ python:
   interpreter: 'E:\PyCharm2022.3\Workplace_1\DeepLearning_base\venv\Scripts\python.exe'
 
 image-savepath: 'E:\IDEA2018\IDEAworkplace3\colonoscope\public\images'
+video-savepath: 'E:\IDEA2018\IDEAworkplace3\colonoscope\public\video'

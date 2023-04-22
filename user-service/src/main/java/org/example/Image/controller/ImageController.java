@@ -36,6 +36,9 @@ public class ImageController {
     @Value("${image-savepath}")
     private String image_savepath;
 
+    @Value("${video-savepath}")
+    private String video_savepath;
+
     @Autowired
     private ImageServiceImpl imageService;
     @PostMapping("/image")
@@ -67,6 +70,27 @@ public class ImageController {
         }
     }
 
+    @PostMapping("/video")
+    public ResponseEntity<UploadResult> uploadVideo(@RequestParam("file") MultipartFile file) {
+        try {
+            // 获取上传的文件名
+            String fileName = generateUniqueFileName(file.getOriginalFilename());
+            // 设置视频文件保存路径
+            String savePath = video_savepath + "/originalVideo/" + fileName;
+            System.out.println("视频的保存路径为"+savePath);
+            // 将视频文件保存到指定文件夹中
+            file.transferTo(new File(savePath));
+            // 返回上传成功的响应
+            UploadResult result = new UploadResult();
+            result.setFileName(fileName);
+            return ResponseEntity.ok(result);
+        } catch (IOException e) {
+            // 返回上传失败的响应
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
     private String generateUniqueFileName(String originalFilename) {
         String baseName = FilenameUtils.getBaseName(originalFilename);
         String extension = FilenameUtils.getExtension(originalFilename);
@@ -83,6 +107,23 @@ public class ImageController {
             System.out.println("这是图片的位置："+image_path);
             System.out.println("这是py脚本的位置："+pythonscriptpath);
             ProcessResult result = processImageWithPython(pythonInterpreterPath,imageService, uid, image_path, pythonscriptpath);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/processVideo")
+    public ResponseEntity<ProcessResult> processVideo(@RequestParam("fileName") String fileName, @RequestParam("uid") Integer uid) throws IOException, InterruptedException {
+        try {
+            // 1. 根据文件名找到对应的视频
+            String video_path = video_savepath + "/originalVideo/" + fileName;
+            String pythonscriptpath = System.getProperty("user.dir")+"/py/process_video.py";
+            System.out.println("这是视频的位置："+video_path);
+            System.out.println("这是py脚本的位置："+pythonscriptpath);
+            ProcessResult result = processVideoWithPython(pythonInterpreterPath,imageService, uid, video_path, pythonscriptpath);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (IOException e) {
@@ -153,10 +194,80 @@ public class ImageController {
         return result;
     }
 
+    private static ProcessResult processVideoWithPython(String pythonInterpreterPath,ImageServiceImpl imageService, Integer uid, String video_path, String pythonScriptPath) throws IOException, InterruptedException {
+        // Create a list to hold the command and arguments
+        List<String> command = new ArrayList<>();
+        command.add(pythonInterpreterPath);
+        command.add(pythonScriptPath);
+
+        // Add the video path to the command
+        command.add(video_path);
+
+
+        // 创建 process builder
+
+        System.out.println("配置的python解释器路径为："+pythonInterpreterPath);
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+
+        // 为了程序执行设置延迟
+        long timeout = 1000; // Timeout in seconds
+        TimeUnit unit = TimeUnit.SECONDS;
+
+        // 开始处理
+        Process p = pb.start();
+
+        // 等待处理完成
+        try {
+            if (!p.waitFor(timeout, unit)) {
+                p.destroy(); // Destroy the process if timeout occurs
+                throw new RuntimeException("Python script execution timed out after " + timeout + " " + unit.toString());
+            }
+            int exitCode = p.exitValue();
+            if (exitCode != 0) {
+                throw new RuntimeException("Python script failed with exit code: " + exitCode);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Python script interrupted", e);
+        }
+
+        // 视频处理结果的路径
+        File file = new File(video_path);
+        String fileName = file.getName().split("\\.")[0] + ".mp4";
+        String path1 = "/video/maskVideo/" + fileName;
+        String path2 = "/video/bboxesVideo/" + fileName;
+        ProcessResult result = new ProcessResult();
+        result.setMaskImage(path1);
+        result.setBboxesImage(path2);
+        // 保存处理历史
+        saveVideoProcessHistory(imageService,uid,video_path,path1,path2);
+        return result;
+    }
     public static void saveProcessHistory(ImageServiceImpl imageService, Integer uid, String imagepath, String maskpath, String boundingboxpath){
         File file = new File(imagepath);
         String imagename = file.getName().split("\\.")[0] + ".jpg";
         imagepath = "/images/originalImage/" + imagename;
+        Date uploaddate = new Date();
+        Image image = new Image();
+        image.setUid(uid);
+        image.setImagename(imagename);
+        image.setImagepath(imagepath);
+        image.setMaskpath(maskpath);
+        image.setBoundingboxpath(boundingboxpath);
+        image.setUploaddate(uploaddate);
+        imageService.insert(image);
+        System.out.println("uid:"+uid);
+        System.out.println("imagename:"+imagename);
+        System.out.println("imagepath:"+imagepath);
+        System.out.println("maskpath:"+maskpath);
+        System.out.println("boundingboxpath:"+boundingboxpath);
+        System.out.println("uploaddate:"+uploaddate);
+    }
+
+    public static void saveVideoProcessHistory(ImageServiceImpl imageService, Integer uid, String imagepath, String maskpath, String boundingboxpath){
+        File file = new File(imagepath);
+        String imagename = file.getName().split("\\.")[0] + ".mp4";
+        imagepath = "/video/originalVideo/" + imagename;
         Date uploaddate = new Date();
         Image image = new Image();
         image.setUid(uid);

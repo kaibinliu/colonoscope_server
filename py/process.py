@@ -82,7 +82,7 @@ def process_image(image_path):
     model = UNet()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    checkpoint = torch.load('E:/IDEA2018/IDEAworkplace3/colonoscope_server/model/unet_model-6.pth', map_location=torch.device('cpu'))
+    checkpoint = torch.load('E:/IDEA2018/IDEAworkplace3/colonoscope_server/model/unet_model-6.pth', map_location=device)
 
     model.load_state_dict(checkpoint)
 
