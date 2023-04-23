@@ -245,7 +245,7 @@ public class ImageController {
     }
     public static void saveProcessHistory(ImageServiceImpl imageService, Integer uid, String imagepath, String maskpath, String boundingboxpath){
         File file = new File(imagepath);
-        String imagename = file.getName().split("\\.")[0] + ".jpg";
+        String imagename = file.getName();
         imagepath = "/images/originalImage/" + imagename;
         Date uploaddate = new Date();
         Image image = new Image();
@@ -264,22 +264,22 @@ public class ImageController {
         System.out.println("uploaddate:"+uploaddate);
     }
 
-    public static void saveVideoProcessHistory(ImageServiceImpl imageService, Integer uid, String imagepath, String maskpath, String boundingboxpath){
-        File file = new File(imagepath);
-        String imagename = file.getName().split("\\.")[0] + ".mp4";
-        imagepath = "/video/originalVideo/" + imagename;
+    public static void saveVideoProcessHistory(ImageServiceImpl imageService, Integer uid, String videopath, String maskpath, String boundingboxpath){
+        File file = new File(videopath);
+        String videoname = file.getName();
+        videopath = "/video/originalVideo/" + videoname;
         Date uploaddate = new Date();
         Image image = new Image();
         image.setUid(uid);
-        image.setImagename(imagename);
-        image.setImagepath(imagepath);
+        image.setImagename(videoname);
+        image.setImagepath(videopath);
         image.setMaskpath(maskpath);
         image.setBoundingboxpath(boundingboxpath);
         image.setUploaddate(uploaddate);
         imageService.insert(image);
         System.out.println("uid:"+uid);
-        System.out.println("imagename:"+imagename);
-        System.out.println("imagepath:"+imagepath);
+        System.out.println("imagename:"+videoname);
+        System.out.println("imagepath:"+videopath);
         System.out.println("maskpath:"+maskpath);
         System.out.println("boundingboxpath:"+boundingboxpath);
         System.out.println("uploaddate:"+uploaddate);
