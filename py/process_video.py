@@ -125,10 +125,12 @@ def process_image(image, model):
 if __name__ == '__main__':
     # 获取命令行参数
     video_path = sys.argv[1]
+    video_savepath = sys.argv[2]
+    model_path = sys.argv[3]
     model = UNet()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    checkpoint = torch.load('E:/IDEA2018/IDEAworkplace3/colonoscope_server/model/unet_model-6.pth', map_location=device)
+    checkpoint = torch.load(model_path, map_location=device)
 
     model.load_state_dict(checkpoint)
 
@@ -144,8 +146,8 @@ if __name__ == '__main__':
 
         # 定义输出视频文件的路径
         filename = os.path.splitext(os.path.basename(video_path))[0]  # 获取文件名（不带扩展名）
-        mask_video_path = 'E:/IDEA2018/IDEAworkplace3/colonoscope/public/video/maskVideo/'+filename+'.mp4'
-        bbox_video_path = 'E:/IDEA2018/IDEAworkplace3/colonoscope/public/video/bboxesVideo/'+filename+'.mp4'
+        mask_video_path = video_savepath + '/maskVideo/'+filename+'.mp4'
+        bbox_video_path = video_savepath + '/bboxesVideo/'+filename+'.mp4'
 
         # 创建输出视频对象
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')

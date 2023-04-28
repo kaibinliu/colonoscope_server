@@ -1,16 +1,19 @@
+# 本后端使用的端口号
 server:
   port: 8085
+# 数据库配置
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/colonoscope?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: '001124'
+#  上传文件大小限制配置
   servlet:
     multipart:
       max-file-size: 256MB
       max-request-size: 256MB
-
+# MyBatis配置
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
@@ -22,8 +25,10 @@ mybatis:
 mybatis-generator:
   configuration-file: src/main/resources/generatorConfig.xml
 
+# 使用的Python解释器路径
 python:
   interpreter: 'E:\PyCharm2022.3\Workplace_1\DeepLearning_base\venv\Scripts\python.exe'
-
-image-savepath: 'E:\IDEA2018\IDEAworkplace3\colonoscope\public\images'
-video-savepath: 'E:\IDEA2018\IDEAworkplace3\colonoscope\public\video'
+# 图像保存路径
+image-savepath: '..\colonoscope\public\images'
+# 视频保存路径
+video-savepath: '..\colonoscope\public\video'

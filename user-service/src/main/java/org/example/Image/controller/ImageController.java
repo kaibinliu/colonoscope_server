@@ -104,9 +104,11 @@ public class ImageController {
             // 1. 根据文件名找到对应的图像
             String image_path = image_savepath + "/originalImage/" + fileName;
             String pythonscriptpath = System.getProperty("user.dir")+"/py/process.py";
+            String model_path = System.getProperty("user.dir")+"/model/unet_model-6.pth";
             System.out.println("这是图片的位置："+image_path);
             System.out.println("这是py脚本的位置："+pythonscriptpath);
-            ProcessResult result = processImageWithPython(pythonInterpreterPath,imageService, uid, image_path, pythonscriptpath);
+            System.out.println("这是模型数据的位置："+model_path);
+            ProcessResult result = processImageWithPython(pythonInterpreterPath,imageService, uid, image_path, image_savepath, model_path, pythonscriptpath);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (IOException e) {
@@ -121,9 +123,11 @@ public class ImageController {
             // 1. 根据文件名找到对应的视频
             String video_path = video_savepath + "/originalVideo/" + fileName;
             String pythonscriptpath = System.getProperty("user.dir")+"/py/process_video.py";
+            String model_path = System.getProperty("user.dir")+"/model/unet_model-6.pth";
             System.out.println("这是视频的位置："+video_path);
             System.out.println("这是py脚本的位置："+pythonscriptpath);
-            ProcessResult result = processVideoWithPython(pythonInterpreterPath,imageService, uid, video_path, pythonscriptpath);
+            System.out.println("这是模型数据的位置："+model_path);
+            ProcessResult result = processVideoWithPython(pythonInterpreterPath,imageService, uid, video_path, video_savepath, model_path, pythonscriptpath);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (IOException e) {
@@ -141,16 +145,19 @@ public class ImageController {
         System.out.println("列表中第一个图片的上传日期是："+list.get(0).getUploaddate());
         return list;
     }
-    private static ProcessResult processImageWithPython(String pythonInterpreterPath,ImageServiceImpl imageService, Integer uid, String image_path, String pythonScriptPath) throws IOException, InterruptedException {
+    private static ProcessResult processImageWithPython(String pythonInterpreterPath,ImageServiceImpl imageService, Integer uid, String image_path, String image_savepath, String model_path, String pythonScriptPath) throws IOException, InterruptedException {
 
         // Create a list to hold the command and arguments
         List<String> command = new ArrayList<>();
         command.add(pythonInterpreterPath);
         command.add(pythonScriptPath);
 
-        // Add the image path to the command
+        // Add the image path and save path to the command
         command.add(image_path);
+        command.add(image_savepath);
 
+        // Add the model path to the command
+        command.add(model_path);
 
         // Create process builder
 
@@ -194,15 +201,18 @@ public class ImageController {
         return result;
     }
 
-    private static ProcessResult processVideoWithPython(String pythonInterpreterPath,ImageServiceImpl imageService, Integer uid, String video_path, String pythonScriptPath) throws IOException, InterruptedException {
+    private static ProcessResult processVideoWithPython(String pythonInterpreterPath,ImageServiceImpl imageService, Integer uid, String video_path, String video_savepath, String model_path, String pythonScriptPath) throws IOException, InterruptedException {
         // Create a list to hold the command and arguments
         List<String> command = new ArrayList<>();
         command.add(pythonInterpreterPath);
         command.add(pythonScriptPath);
 
-        // Add the video path to the command
+        // Add the video path and save path to the command
         command.add(video_path);
+        command.add(video_savepath);
 
+        // Add the model path to the command
+        command.add(model_path);
 
         // 创建 process builder
 

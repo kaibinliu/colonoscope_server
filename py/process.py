@@ -78,11 +78,11 @@ class UNet(torch.nn.Module):
 
         return out
 
-def process_image(image_path):
+def process_image(image_path, image_savepath, model_path):
     model = UNet()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    checkpoint = torch.load('E:/IDEA2018/IDEAworkplace3/colonoscope_server/model/unet_model-6.pth', map_location=device)
+    checkpoint = torch.load(model_path, map_location=device)
 
     model.load_state_dict(checkpoint)
 
@@ -138,8 +138,8 @@ def process_image(image_path):
         # 返回PIL图像
         # return (image_mask, image)
         # 保存PIL图像
-        path1 = 'E:/IDEA2018/IDEAworkplace3/colonoscope/public/images/maskImage/'
-        path2 = 'E:/IDEA2018/IDEAworkplace3/colonoscope/public/images/bboxesImage/'
+        path1 = image_savepath + '/maskImage/'
+        path2 = image_savepath + '/bboxesImage/'
         # 获取文件名和扩展名
         filename = os.path.splitext(os.path.basename(image_path))[0]  # 获取文件名（不带扩展名）
         # extension = os.path.splitext(os.path.basename(image_path))[1]  # 获取扩展名（包括'.'）
@@ -151,7 +151,9 @@ def process_image(image_path):
 if __name__ == '__main__':
     # 获取命令行参数
     image_path = sys.argv[1]
+    image_savepath = sys.argv[2]
+    model_path = sys.argv[3]
     # 调用函数
-    result = process_image(image_path)
+    result = process_image(image_path, image_savepath, model_path)
     # 输出结果
     # print(result)
