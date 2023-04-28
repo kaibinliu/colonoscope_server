@@ -29,6 +29,6 @@ mybatis-generator:
 python:
   interpreter: 'E:\PyCharm2022.3\Workplace_1\DeepLearning_base\venv\Scripts\python.exe'
 # 图像保存路径
-image-savepath: '..\colonoscope\public\images'
+image-savepath: '../colonoscope/public/images'
 # 视频保存路径
-video-savepath: '..\colonoscope\public\video'
+video-savepath: '../colonoscope/public/video'

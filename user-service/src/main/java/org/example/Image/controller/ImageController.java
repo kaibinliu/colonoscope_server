@@ -76,16 +76,18 @@ public class ImageController {
             // 获取上传的文件名
             String fileName = generateUniqueFileName(file.getOriginalFilename());
             // 设置视频文件保存路径
-            String savePath = video_savepath + "/originalVideo/" + fileName;
+            String savePath = System.getProperty("user.dir") + "/" + video_savepath + "/originalVideo/" + fileName;
             System.out.println("视频的保存路径为"+savePath);
             // 将视频文件保存到指定文件夹中
             file.transferTo(new File(savePath));
             // 返回上传成功的响应
             UploadResult result = new UploadResult();
             result.setFileName(fileName);
+            System.out.println("上传成功，文件名为" + fileName);
             return ResponseEntity.ok(result);
         } catch (IOException e) {
             // 返回上传失败的响应
+            System.err.println("上传失败：" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
