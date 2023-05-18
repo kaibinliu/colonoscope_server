@@ -27,7 +27,7 @@ mybatis-generator:
 
 # 使用的Python解释器路径
 python:
-  interpreter: 'E:\PyCharm2022.3\Workplace_1\DeepLearning_base\venv\Scripts\python.exe'
+  interpreter: 'E:\IDEA2018\IDEAworkplace3\venv\Scripts\python.exe'
 # 图像保存路径
 image-savepath: '../colonoscope/public/images'
 # 视频保存路径
